@@ -1,9 +1,6 @@
-import { BaseScraper } from "./BaseScraper";
-const axios = require("axios");
-const cheerio = require("cheerio");
-const puppeteer = require("puppeteer-extra");
-const scrapInfos = require("../utils/scrapInfos");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { BaseScraper } from "./BaseScraper.js";
 
 export class ProductScraper extends BaseScraper {
   async parseKabumHtml(url: string) {
@@ -36,6 +33,7 @@ export class ProductScraper extends BaseScraper {
 
         return values;
       });
+      console.log(productCard);
 
       const products: any[] = [];
       // Exemplo de scraping via Cheerio (depende da estrutura da página)
@@ -54,9 +52,6 @@ export class ProductScraper extends BaseScraper {
       const page = await browser.newPage();
       await page.goto(url, {
         timeout: 0,
-        headless: false,
-        slowMo: 50,
-        waitUntil: "networkidle2",
       });
       await page.setUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"

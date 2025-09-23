@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-import { ProductScraper } from "./scrapers/ProductScraper";
-import { ScrapeProducts } from "./use-cases/ScrapeProducts";
+import { ProductScraper } from "./scrapers/ProductScraper.js";
+import { ScrapeProducts } from "./use-cases/ScrapeProducts.js";
 
 const app = express();
 const port = 3000;
@@ -9,7 +9,7 @@ const scraper = new ProductScraper();
 // const repository = new ProductRepositor();
 const scrapeUseCase = new ScrapeProducts(scraper, null);
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.get("/api/scrape", async (req: Request, res: Response) => {
   try {
@@ -26,6 +26,7 @@ app.get("/api/scrape", async (req: Request, res: Response) => {
     return res.status(500).json({ error: err.message });
   }
 });
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
