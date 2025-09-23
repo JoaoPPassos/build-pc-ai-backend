@@ -1,5 +1,5 @@
-import { IProductRepository } from "@/repositories/IProductRepository";
-import { Product } from "@/entities/Product";
+import { IProductRepository } from "@/domain/repositories/IProductRepository";
+import { Product } from "@/domain/entities/Product";
 
 export class ScrapeProducts {
   constructor(private repo: IProductRepository) {}

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { ProductController } from "../controllers/ProductController.js";
-import { ScrapeProducts } from "../use-cases/ScrapeProducts.js";
-import { ProductScraper } from "../scrapers/ProductScraper.js";
+import { ScrapeProducts } from "../../application/use-cases/ScrapeProducts.js";
+import { ProductScraper } from "../../infrastructure/scrapers/ProductScraper.js";
 
 const router = Router();
 const scraper = new ProductScraper();

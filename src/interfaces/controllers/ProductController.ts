@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import { ScrapeProducts } from "../use-cases/ScrapeProducts.js";
+import { ScrapeProducts } from "../../application/use-cases/ScrapeProducts.js";
 
 export class ProductController{
   constructor(private scrapeProducts: ScrapeProducts){}

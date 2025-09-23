@@ -1,9 +1,9 @@
 // scrapers/ProductScraper.ts
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import { IProductRepository } from "../repositories/IProductRepository.js";
-import { Product } from "../entities/Product.js";
-import { stringToCurrencyString } from "../utils/formatString.js";
+import { IProductRepository } from "../../domain/repositories/IProductRepository.js";
+import { Product } from "../../domain/entities/Product.js";
+import { stringToCurrencyNumber, stringToCurrencyString } from "../utils/formatString.js";
 
 export class ProductScraper implements IProductRepository {
   async scrapeKabum(url: string): Promise<Product[]> {
@@ -46,7 +46,7 @@ export class ProductScraper implements IProductRepository {
       (p) =>
         new Product(
           p.title,
-          stringToCurrencyString(p.price),
+          stringToCurrencyNumber(p.price),
           p.image,
           p.code,
           p.href
@@ -76,7 +76,7 @@ export class ProductScraper implements IProductRepository {
     await browser.close();
 
     return products.map(
-      (p) => new Product(p.title, p.price, p.image, "", p.href)
+      (p) => new Product(p.title,  stringToCurrencyNumber(p.price), p.image, "", p.href)
     );
   }
 }
