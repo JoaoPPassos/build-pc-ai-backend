@@ -1,11 +1,11 @@
 // scrapers/ProductScraper.ts
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import { IProductRepository } from "../../domain/repositories/IProductRepository.js";
+import { IProductScrapperRepository } from "../../domain/repositories/IProductScrapperRepository.js";
 import { Product } from "../../domain/entities/Product.js";
 import { stringToCurrencyNumber, stringToCurrencyString } from "../utils/formatString.js";
 
-export class ProductScraper implements IProductRepository {
+export class ProductScrapper implements IProductScrapperRepository {
   async scrapeKabum(url: string): Promise<Product[]> {
     puppeteer.use(StealthPlugin());
     const browser = await puppeteer.launch();

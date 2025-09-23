@@ -1,15 +1,15 @@
-import { IProductRepository } from "@/domain/repositories/IProductRepository";
-import { Product } from "@/domain/entities/Product";
+import { Product } from "../../domain/entities/Product";
+import { IProductScrapperRepository } from "../../domain/repositories/IProductScrapperRepository";
 
 export class ScrapeProducts {
-  constructor(private repo: IProductRepository) {}
+  constructor(private scrapper: IProductScrapperRepository) {}
 
   async execute(url: string, source: "kabum" | "pichau"): Promise<Product[]> {
     if (source === "kabum") {
-      return this.repo.scrapeKabum(url);
+      return this.scrapper.scrapeKabum(url);
     }
     if (source === "pichau") {
-      return this.repo.scrapePichau(url);
+      return this.scrapper.scrapePichau(url);
     }
     throw new Error("Fonte inválida");
   }
