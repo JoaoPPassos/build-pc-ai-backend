@@ -67,25 +67,25 @@ export class ProductScrapper implements IProductScrapperRepository {
       (elements: any) =>
         Array.from(elements).map((el: any) => {
           const title = el.querySelector("h2")?.textContent?.trim() || "";
+          const code = title.split(",").at(-1).trim();
           const price =
             el.querySelector('[class*="price_vista"]')?.textContent?.trim() ||
             "";
           const imageSrc = el.querySelector("img")?.getAttribute("src") || "";
           const href = el.href || "";
-          return { title, price, image: imageSrc, href };
+          return { title, price, image: imageSrc, code, href };
         })
     );
 
     await browser.close();
 
-    return products.map(
-      (p) =>  ({
-        title: p.title,
-        price: stringToCurrencyNumber(p.price),
-        imageUrl: p.image,
-        productUrl: p.href,
-        source: "pichau",
-      })
-    );
+    return products.map((p) => ({
+      title: p.title,
+      price: stringToCurrencyNumber(p.price),
+      code: p.code || "",
+      imageUrl: p.image,
+      productUrl: p.href,
+      source: "pichau",
+    }));
   }
 }
