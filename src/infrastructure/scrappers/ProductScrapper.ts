@@ -3,7 +3,10 @@ import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { IProductScrapperRepository } from "../../domain/repositories/IProductScrapperRepository.js";
 import { Product } from "../../domain/entities/Product.js";
-import { stringToCurrencyNumber, stringToCurrencyString } from "../utils/formatString.js";
+import {
+  stringToCurrencyNumber,
+  stringToCurrencyString,
+} from "../../utils/formatString.js";
 
 export class ProductScrapper implements IProductScrapperRepository {
   async scrapeKabum(url: string): Promise<Product[]> {

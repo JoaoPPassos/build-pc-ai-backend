@@ -12,6 +12,17 @@ export class ProductRepository implements IProductRepository {
     };
   }
 
+  async createOrUpdate(product: Omit<Product, "id">): Promise<Product> {
+    if (!product.code) throw new Error("Product code is empty");
+    const existingProduct = await this.findByCode(product.code);
+
+    if (existingProduct) {
+      return this.update({ ...product, id: existingProduct.id });
+    }
+
+    return this.create(product);
+  }
+
   async findAll(): Promise<Product[]> {
     const collection = MongoHelper.getCollection("products");
 
