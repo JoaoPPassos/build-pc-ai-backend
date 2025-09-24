@@ -5,7 +5,7 @@ export const stringToCurrencyString = (raw: string): string => {
   
 }
 
-export const stringToCurrencyNumber = (raw: string): number => {
+export const stringToCurrencyNumber = (raw: string): number | null => {
   const cleaned = raw.replace(/&nbsp;/g, "").replace(/\s/g, "");
 
   // Remove currency symbol (R$)
@@ -13,5 +13,5 @@ export const stringToCurrencyNumber = (raw: string): number => {
 
   // Convert to number: remove thousand separator "." and replace decimal "," with "."
   const numeric = parseFloat(noCurrency.replace(/\./g, "").replace(",", "."));
-  return numeric
-}
+  return numeric ?? null;
+};

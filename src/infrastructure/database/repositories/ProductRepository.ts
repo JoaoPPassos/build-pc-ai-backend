@@ -17,10 +17,25 @@ export class ProductRepository implements IProductRepository {
     const existingProduct = await this.findByCode(product.code);
 
     if (existingProduct) {
-      return this.update({ ...product, id: existingProduct.id });
+      const newHistoryPrice = existingProduct.historyPrice;
+
+      if (product.price !== null){
+        console.log("entrou")
+        newHistoryPrice.push({
+          price: product.price ?? null,
+          date: new Date(),
+        });
+      }
+      console.log(newHistoryPrice)
+        
+      return this.update({
+        ...product,
+        id: existingProduct.id,
+        historyPrice: newHistoryPrice,
+      });
     }
 
-    return this.create(product);
+    return this.create({...product, historyPrice: product.price !== null ? [{ price: product.price ?? null, date: new Date() }] : []});
   }
 
   async findAll(): Promise<Product[]> {
@@ -34,6 +49,7 @@ export class ProductRepository implements IProductRepository {
       code: p.code,
       productUrl: p.productUrl,
       source: p.source,
+      historyPrice: p.historyPrice,
       id: p._id.toHexString(),
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
@@ -52,6 +68,7 @@ export class ProductRepository implements IProductRepository {
       code: product.code,
       productUrl: product.productUrl,
       source: product.source,
+      historyPrice: product.historyPrice,
       id: product._id.toHexString(),
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
@@ -69,6 +86,7 @@ export class ProductRepository implements IProductRepository {
           price: product.price,
           imageUrl: product.imageUrl,
           productUrl: product.productUrl,
+          historyPrice: product.historyPrice,
           source: product.source,
           updatedAt: new Date(),
         },
@@ -86,6 +104,7 @@ export class ProductRepository implements IProductRepository {
       code: updatedProduct.code,
       productUrl: updatedProduct.productUrl,
       source: updatedProduct.source,
+      historyPrice: updatedProduct.historyPrice,
       id: updatedProduct._id.toHexString(),
       createdAt: updatedProduct.createdAt,
       updatedAt: updatedProduct.updatedAt,
