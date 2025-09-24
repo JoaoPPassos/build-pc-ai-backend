@@ -43,14 +43,14 @@ export class ProductScrapper implements IProductScrapperRepository {
     await browser.close();
 
     return products.map(
-      (p) =>
-        new Product(
-          p.title,
-          stringToCurrencyNumber(p.price),
-          p.image,
-          p.code,
-          p.href
-        )
+      (p): Product => ({
+        title: p.title,
+        price: stringToCurrencyNumber(p.price),
+        imageUrl: p.image,
+        code: p.code,
+        productUrl: p.href,
+        source: "kabum",
+      })
     );
   }
 
@@ -76,7 +76,13 @@ export class ProductScrapper implements IProductScrapperRepository {
     await browser.close();
 
     return products.map(
-      (p) => new Product(p.title,  stringToCurrencyNumber(p.price), p.image, "", p.href)
+      (p) =>  ({
+        title: p.title,
+        price: stringToCurrencyNumber(p.price),
+        imageUrl: p.image,
+        productUrl: p.href,
+        source: "pichau",
+      })
     );
   }
 }

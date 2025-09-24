@@ -1,10 +1,11 @@
-export class Product {
-  constructor(
-    public title: string,
-    public price: number,
-    public image: string,
-    public code?: string,
-    public href?: string,
-    public createdAt?: Date
-  ) {}
+export interface Product {
+  id?: string;
+  title: string;
+  code?: string;
+  price: number;
+  imageUrl: string;
+  productUrl: string;
+  source: "kabum" | "pichau";
+  createdAt?: Date;
+  updatedAt?: Date;
 }

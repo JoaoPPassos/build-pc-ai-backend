@@ -1,5 +1,5 @@
-import { Product } from "../../domain/entities/Product";
-import { IProductScrapperRepository } from "../../domain/repositories/IProductScrapperRepository";
+import { Product } from "../../../domain/entities/Product";
+import { IProductScrapperRepository } from "../../../domain/repositories/IProductScrapperRepository";
 
 export class ScrapeProducts {
   constructor(private scrapper: IProductScrapperRepository) {}
