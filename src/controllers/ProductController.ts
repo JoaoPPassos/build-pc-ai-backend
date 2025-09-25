@@ -1,11 +1,13 @@
 import {Request, Response} from "express";
 import { ScrapeProducts } from "../application/use-cases/products/ScrapeProducts.js";
 import { CreateProduct } from "../application/use-cases/products/CreateProduct.js";
+import { FindProductByFilter } from "@/application/use-cases/products/FindProductByFilter.js";
 
 export class ProductController {
   constructor(
     private scrapeProducts: ScrapeProducts,
-    private products: CreateProduct
+    private products: CreateProduct,
+    private findByFilter?: FindProductByFilter
   ) {}
 
   async handle(req: Request, res: Response) {
@@ -27,6 +29,24 @@ export class ProductController {
         products.map((product) => this.products.execute(product))
       );
       res.json(createdProducts);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "Error internal server" });
+    }
+  }
+
+  async filter(req: Request, res: Response) {
+    try {
+      const { items } = req.body;
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        return res
+          .status(400)
+          .json({ error: "Missing or invalid items parameter" });
+      }
+
+      const foundProducts = await this.findByFilter?.execute(items);
+
+      res.json(foundProducts);
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: "Error internal server" });

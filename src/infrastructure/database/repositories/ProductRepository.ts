@@ -1,6 +1,7 @@
 import { Product } from "../../../domain/entities/Product.js";
 import { IProductRepository } from "../../../domain/repositories/IProductRepository.js";
 import { MongoHelper } from "../mongodb/MongoHelper.js";
+import { Filter, Document } from "mongodb";
 
 export class ProductRepository implements IProductRepository {
   async create(product: Omit<Product, "id">): Promise<Product> {
@@ -19,15 +20,14 @@ export class ProductRepository implements IProductRepository {
     if (existingProduct) {
       const newHistoryPrice = existingProduct.historyPrice;
 
-      if (product.price !== null){
-        console.log("entrou")
+      if (product.price !== null) {
+        console.log("entrou");
         newHistoryPrice.push({
           price: product.price ?? null,
           date: new Date(),
         });
       }
-      console.log(newHistoryPrice)
-        
+
       return this.update({
         ...product,
         id: existingProduct.id,
@@ -35,13 +35,39 @@ export class ProductRepository implements IProductRepository {
       });
     }
 
-    return this.create({...product, historyPrice: product.price !== null ? [{ price: product.price ?? null, date: new Date() }] : []});
+    return this.create({
+      ...product,
+      historyPrice:
+        product.price !== null
+          ? [{ price: product.price ?? null, date: new Date() }]
+          : [],
+    });
   }
 
   async findAll(): Promise<Product[]> {
     const collection = MongoHelper.getCollection("products");
 
     const products = await collection.find().toArray();
+    return products.map((p) => ({
+      title: p.title,
+      price: p.price,
+      imageUrl: p.imageUrl,
+      code: p.code,
+      productUrl: p.productUrl,
+      source: p.source,
+      historyPrice: p.historyPrice,
+      id: p._id.toHexString(),
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+    }));
+  }
+
+  async findByProduct(items: string[]): Promise<Product[]> {
+    const filters = this.constructFilters(items); // as unknown as Filter<Document>;
+    const collection = MongoHelper.getCollection("products");
+    console.log(filters);
+
+    const products = await collection.find(filters).toArray();
     return products.map((p) => ({
       title: p.title,
       price: p.price,
@@ -115,5 +141,19 @@ export class ProductRepository implements IProductRepository {
     const collection = MongoHelper.getCollection("products");
 
     await collection.deleteOne({ code });
+  }
+
+  private constructFilters(items: string[]): Filter<Document> {
+    let object = { $and: [{ price: { $ne: null } }, { $or: [] as any[] }] };
+    for (let item of items) {
+      const titleArray = item.split(/\s|-/).map((word) => word.trim());
+      object["$and"]?.[1]?.["$or"]?.push({
+        $and: titleArray.map((word: string) => ({
+          title: { $regex: word, $options: "i" },
+        })),
+      });
+    }
+    console.log(object["$and"]?.[1]?.["$or"]);
+    return object;
   }
 }

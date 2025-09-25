@@ -15,7 +15,11 @@ export class ScrapeProducts {
       return values;
     }
     if (source === "pichau") {
-      return this.scrapper.scrapePichau(url);
+      const values = [];
+      const products = await this.scrapper.scrapePichau(url);
+      values.push(...products);
+
+      return values;
     }
     throw new Error("Fonte inválida");
   }

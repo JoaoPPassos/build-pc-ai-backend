@@ -13,5 +13,5 @@ export const stringToCurrencyNumber = (raw: string): number | null => {
 
   // Convert to number: remove thousand separator "." and replace decimal "," with "."
   const numeric = parseFloat(noCurrency.replace(/\./g, "").replace(",", "."));
-  return numeric ?? null;
+  return isNaN(numeric) ? null : numeric;
 };

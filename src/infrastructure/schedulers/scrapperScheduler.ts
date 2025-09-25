@@ -10,7 +10,7 @@ import { Product } from "../../domain/entities/Product.js";
 
 export class ScrapperScheduler {
   static start() {
-    cron.schedule("22 * * * *", async () => {
+    cron.schedule("19 * * * *", async () => {
       console.log("Cronjob iniciado: scraping de produtos");
       const scraper = new ProductScrapper();
       const useCase = new ScrapeProducts(scraper);
@@ -19,7 +19,7 @@ export class ScrapperScheduler {
       try {
         for (let category of kabumCategories) {
           const productList = await useCase.execute(
-            `https://www.kabum.com.br/hardware/${category}?page_number=1&page_size=100&facet_filters=&sort=most_searched`,
+            `https://www.kabum.com.br/${category}?page_number=1&page_size=100&facet_filters=&sort=most_searched`,
             "kabum"
           );
           products.push(...productList);
@@ -34,7 +34,7 @@ export class ScrapperScheduler {
       }
     });
 
-    cron.schedule("22 * * * *", async () => {
+    cron.schedule("19 * * * *", async () => {
       console.log("Cronjob iniciado: scraping de produtos");
       const scraper = new ProductScrapper();
       const useCase = new ScrapeProducts(scraper);
@@ -43,7 +43,7 @@ export class ScrapperScheduler {
       try {
         for (let category of pichauCategories) {
           const productList = await useCase.execute(
-            `https://www.pichau.com.br/hardware/${category}`,
+            `https://www.pichau.com.br/${category}`,
             "pichau"
           );
           products.push(...productList);
