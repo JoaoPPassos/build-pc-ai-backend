@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
-import { ScrapeProducts } from "../../application/use-cases/products/ScrapeProducts.js";
-import { CreateProduct } from "../../application/use-cases/products/CreateProduct.js";
+import { ScrapeProducts } from "../application/use-cases/products/ScrapeProducts.js";
+import { CreateProduct } from "../application/use-cases/products/CreateProduct.js";
 
 export class ProductController {
   constructor(
