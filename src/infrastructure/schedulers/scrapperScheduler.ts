@@ -10,8 +10,10 @@ import { Product } from "../../domain/entities/Product.js";
 
 export class ScrapperScheduler {
   static start() {
-    cron.schedule("19 * * * *", async () => {
-      console.log("Cronjob iniciado: scraping de produtos");
+    const EXPRESSION = "0 12 * * *";
+
+    cron.schedule(EXPRESSION, async () => {
+      console.log("Cronjob iniciado: scraping de produtos KABUM");
       const scraper = new ProductScrapper();
       const useCase = new ScrapeProducts(scraper);
       const productRepo = new ProductRepository();
@@ -28,14 +30,16 @@ export class ScrapperScheduler {
       } catch (error) {
         console.error("Erro ao raspar produtos da Kabum:", error);
       } finally {
+        console.log("Iniciando criação e update de produtos Kabum");
         for (let product of products) {
           productRepo.createOrUpdate(product);
         }
+        console.log("Criação e update de produtos finalizado Kabum");
       }
     });
 
-    cron.schedule("19 * * * *", async () => {
-      console.log("Cronjob iniciado: scraping de produtos");
+    cron.schedule(EXPRESSION, async () => {
+      console.log("Cronjob iniciado: scraping de produtos PICHAU");
       const scraper = new ProductScrapper();
       const useCase = new ScrapeProducts(scraper);
       const productRepo = new ProductRepository();
@@ -52,9 +56,13 @@ export class ScrapperScheduler {
       } catch (error) {
         console.error("Erro ao raspar produtos da Pichau:", error);
       } finally {
+        console.log("Iniciando criação e update de produtos Pichau");
+
         for (let product of products) {
           productRepo.createOrUpdate(product);
         }
+
+        console.log("Criação e update de produtos finalizado Pichau");
       }
     });
   }

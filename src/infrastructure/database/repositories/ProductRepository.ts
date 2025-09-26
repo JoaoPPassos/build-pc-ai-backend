@@ -21,7 +21,6 @@ export class ProductRepository implements IProductRepository {
       const newHistoryPrice = existingProduct.historyPrice;
 
       if (product.price !== null) {
-        console.log("entrou");
         newHistoryPrice.push({
           price: product.price ?? null,
           date: new Date(),
@@ -62,24 +61,30 @@ export class ProductRepository implements IProductRepository {
     }));
   }
 
-  async findByProduct(items: string[]): Promise<Product[]> {
-    const filters = this.constructFilters(items); // as unknown as Filter<Document>;
+  async findByProduct(items: string[]): Promise<{[x:string]:Product[]}> {
+    const filters = this.constructFilters(items, 5); // as unknown as Filter<Document>;
     const collection = MongoHelper.getCollection("products");
-    console.log(filters);
 
-    const products = await collection.find(filters).toArray();
-    return products.map((p) => ({
-      title: p.title,
-      price: p.price,
-      imageUrl: p.imageUrl,
-      code: p.code,
-      productUrl: p.productUrl,
-      source: p.source,
-      historyPrice: p.historyPrice,
-      id: p._id.toHexString(),
-      createdAt: p.createdAt,
-      updatedAt: p.updatedAt,
-    }));
+    const results = await collection.aggregate(filters).toArray();
+    const mapped = Object.fromEntries(
+      Object.entries(results[0]).map(([key, products]) => [
+        key,
+        (products as any[]).map(p => ({
+          title: p.title,
+          price: p.price,
+          imageUrl: p.imageUrl,
+          code: p.code,
+          productUrl: p.productUrl,
+          source: p.source,
+          historyPrice: p.historyPrice,
+          id: p._id?.toHexString?.(),
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt,
+        }))
+      ])
+);
+
+return mapped;
   }
 
   async findByCode(code: string): Promise<Product | null> {
@@ -143,17 +148,30 @@ export class ProductRepository implements IProductRepository {
     await collection.deleteOne({ code });
   }
 
-  private constructFilters(items: string[]): Filter<Document> {
-    let object = { $and: [{ price: { $ne: null } }, { $or: [] as any[] }] };
-    for (let item of items) {
-      const titleArray = item.split(/\s|-/).map((word) => word.trim());
-      object["$and"]?.[1]?.["$or"]?.push({
-        $and: titleArray.map((word: string) => ({
-          title: { $regex: word, $options: "i" },
-        })),
-      });
+  private constructFilters(items: string[],limit: number) {
+    const facet: Record<string, any[]> = {};
+
+    for (const item of items) {
+      const key = item.replace(/[.\s]/g, "_"); // substitui espaços e pontos
+      const titleArray = item
+        .split(/\s|-/)
+        .map(word => word.trim())
+        .filter(Boolean);
+
+      facet[key] = [
+        {
+          $match: {
+            price: { $ne: null },
+            $and: titleArray.map(word => ({
+              title: { $regex: word, $options: "i" }
+            }))
+          }
+        },
+        { $sort: { price: 1 } },
+        { $limit: limit }
+      ];
     }
-    console.log(object["$and"]?.[1]?.["$or"]);
-    return object;
+
+  return [{ $facet: facet }];
   }
 }

@@ -59,10 +59,16 @@ export class ProductScrapper implements IProductScrapperRepository {
       });
       products.push(...list);
       const currentUrl = page.url();
-      const finalUrl = `${currentUrl.split("?")[0]}?page_number=${
-        i + 1
-      }&page_size=100&facet_filters=&sort=most_searched`;
-      await page.goto(finalUrl, { waitUntil: "networkidle0" });
+      if (i + 1 <= getPages) {
+        const finalUrl = `${currentUrl.split("?")[0]}?page_number=${
+          i + 1
+        }&page_size=100&facet_filters=&sort=most_searched`;
+
+        await page.goto(finalUrl, {
+          waitUntil: "networkidle0",
+          timeout: 60000,
+        });
+      }
     }
 
     await browser.close();
