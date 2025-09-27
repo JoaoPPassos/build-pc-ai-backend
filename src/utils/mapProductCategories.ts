@@ -9,7 +9,7 @@ export const kabumCategories: string[] = [
   "hardware/coolers/air-cooler",
   "hardware/coolers/water-cooler",
   "hardware/coolers/fan",
-  "hardware/gabinetes",
+  "perifericos/gabinetes",
   "computadores/monitores",
 ];
 
@@ -23,4 +23,6 @@ export const pichauCategories: string[] = [
   "hardware/ssd",
   "hardware/cooler-processador",
   "hardware/ventoinhas-e-casemod",
+  "hardware/gabinete",
+  "monitores",
 ];
