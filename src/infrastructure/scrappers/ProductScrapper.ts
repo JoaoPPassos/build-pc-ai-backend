@@ -1,26 +1,54 @@
 // scrapers/ProductScraper.ts
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import { IProductScrapperRepository } from "../../domain/repositories/IProductScrapperRepository.js";
-import { Product } from "../../domain/entities/Product.js";
+import { IProductScrapperRepository } from "../../domain/repositories/IProductScrapperRepository";
+import { Product } from "../../domain/entities/Product";
 import {
   stringToCurrencyNumber,
   stringToCurrencyString,
-} from "../../utils/formatString.js";
+} from "../../utils/formatString";
 import { get } from "http";
+import { Page } from "puppeteer-core";
 
 puppeteer.use(StealthPlugin());
 
 export class ProductScrapper implements IProductScrapperRepository {
   async scrapeKabum(url: string): Promise<Product[]> {
-    const products = [];
+    let products: Product[] = [];
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(url, { timeout: 0 });
+    products = await this.parsePageKabum(page);
+
+    console.log("chegou", products);
+
+    await browser.close();
+    return products;
+  }
+
+  async scrapePichau(url: string): Promise<Product[]> {
+    puppeteer.use(StealthPlugin());
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(url, { timeout: 0 });
+    const content = await page.content();
+
+    if (content.includes("Site em Manutenção")) {
+      throw new Error("Pichau está em manutenção ou bloqueando requests.");
+    }
+
+    const products = await this.parsePagePichau(page);
+
+    await browser.close();
+
+    return products;
+  }
+
+  async parsePageKabum(page: Page): Promise<Product[]> {
+    const products: any[] = [];
 
     const getPages = await page.$$eval(".pagination", (uls: any) => {
       if (!uls.length) return null;
-
       const ul = uls[0]; // pega o primeiro UL encontrado
       const items = ul.querySelectorAll("li");
 
@@ -29,16 +57,12 @@ export class ProductScrapper implements IProductScrapperRepository {
       const penultimo = items[items.length - 2]; // penúltimo LI
       return penultimo.textContent?.trim() || null;
     });
+
     for (let i = 1; i <= (getPages ? parseInt(getPages) : 0); i++) {
       const list = await page.evaluate(() => {
         const elements = document.querySelectorAll(".productCard");
-        const values: {
-          title: string;
-          price: string;
-          image: string;
-          code: string;
-          href: string;
-        }[] = [];
+
+        const values: any[] = [];
         elements.forEach((el) => {
           const title = el.querySelector(".nameCard")?.innerHTML || "";
           const price = el.querySelector(".priceCard")?.innerHTML || "";
@@ -52,8 +76,15 @@ export class ProductScrapper implements IProductScrapperRepository {
               .querySelector(".productLink")
               ?.getAttribute("data-smarthintproductid") || "";
           const href = el.querySelector("a")?.href || "";
-
-          values.push({ title, price, image, code, href });
+          values.push({
+            title,
+            price,
+            imageUrl: image,
+            code,
+            productUrl: href,
+            source: "kabum",
+            historyPrice: [],
+          });
         });
         return values;
       });
@@ -71,32 +102,14 @@ export class ProductScrapper implements IProductScrapperRepository {
       }
     }
 
-    await browser.close();
-
-    return products.map(
-      (p): Product => ({
-        title: p.title,
-        price: stringToCurrencyNumber(p.price),
-        imageUrl: p.image,
-        code: p.code,
-        productUrl: p.href,
-        historyPrice: [],
-        source: "kabum",
-      })
-    );
+    return products.map((prod) => ({
+      ...prod,
+      price: stringToCurrencyNumber(prod.price ?? ""),
+    })) as Product[];
   }
 
-  async scrapePichau(url: string): Promise<Product[]> {
-    const products = [];
-    puppeteer.use(StealthPlugin());
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(url, { timeout: 0 });
-    const content = await page.content();
-
-    if (content.includes("Site em Manutenção")) {
-      throw new Error("Pichau está em manutenção ou bloqueando requests.");
-    }
+  async parsePagePichau(page: Page): Promise<Product[]> {
+    const products: any[] = [];
 
     const getPages = await page.$$eval(
       'nav[aria-label="pagination navigation"]',
@@ -125,7 +138,15 @@ export class ProductScrapper implements IProductScrapperRepository {
               "";
             const imageSrc = el.querySelector("img")?.getAttribute("src") || "";
             const href = el.href || "";
-            return { title, price, image: imageSrc, code, href };
+            return {
+              title,
+              price,
+              imageUrl: imageSrc,
+              code,
+              productUrl: href,
+              source: "pichau",
+              historyPrice: [],
+            };
           })
       );
       products.push(...list);
@@ -134,16 +155,9 @@ export class ProductScrapper implements IProductScrapperRepository {
       await page.goto(finalUrl, { waitUntil: "networkidle0" });
     }
 
-    await browser.close();
-
-    return products.map((p) => ({
-      title: p.title,
-      price: stringToCurrencyNumber(p.price),
-      code: p.code || "",
-      imageUrl: p.image,
-      productUrl: p.href,
-      historyPrice: [],
-      source: "pichau",
-    }));
+    return products.map((prod) => ({
+      ...prod,
+      price: stringToCurrencyNumber(prod.price ?? ""),
+    })) as Product[];
   }
 }
