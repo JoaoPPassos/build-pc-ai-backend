@@ -47,16 +47,17 @@ export class ProductScrapper implements IProductScrapperRepository {
   async parsePageKabum(page: Page): Promise<Product[]> {
     const products: any[] = [];
 
-    const getPages = await page.$$eval(".pagination", (uls: any) => {
-      if (!uls.length) return null;
-      const ul = uls[0]; // pega o primeiro UL encontrado
-      const items = ul.querySelectorAll("li");
+    const getPages =
+      (await page.$$eval(".pagination", (uls: any) => {
+        if (!uls.length) return null;
+        const ul = uls[0]; // pega o primeiro UL encontrado
+        const items = ul.querySelectorAll("li");
 
-      if (items.length < 2) return null;
+        if (items.length < 2) return null;
 
-      const penultimo = items[items.length - 2]; // penúltimo LI
-      return penultimo.textContent?.trim() || null;
-    });
+        const penultimo = items[items.length - 2]; // penúltimo LI
+        return penultimo.textContent?.trim() || null;
+      })) || 1;
 
     for (let i = 1; i <= (getPages ? parseInt(getPages) : 0); i++) {
       const list = await page.evaluate(() => {
@@ -76,15 +77,16 @@ export class ProductScrapper implements IProductScrapperRepository {
               .querySelector(".productLink")
               ?.getAttribute("data-smarthintproductid") || "";
           const href = el.querySelector("a")?.href || "";
-          values.push({
-            title,
-            price,
-            imageUrl: image,
-            code,
-            productUrl: href,
-            source: "kabum",
-            historyPrice: [],
-          });
+          if (title && code)
+            values.push({
+              title,
+              price,
+              imageUrl: image,
+              code,
+              productUrl: href,
+              source: "kabum",
+              historyPrice: [],
+            });
         });
         return values;
       });
@@ -124,7 +126,7 @@ export class ProductScrapper implements IProductScrapperRepository {
         const penultimo = items[items.length - 2]; // penúltimo LI
         return penultimo.textContent?.trim() || null;
       }
-    );
+    ) || 1;
 
     for (let i = 1; i <= (getPages ? parseInt(getPages) : 0); i++) {
       const list = await page.$$eval(
@@ -147,7 +149,7 @@ export class ProductScrapper implements IProductScrapperRepository {
               source: "pichau",
               historyPrice: [],
             };
-          })
+          }).filter(e => e.title && e.code)
       );
       products.push(...list);
       const currentUrl = page.url();
