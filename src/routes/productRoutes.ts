@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { ProductController } from "../controllers/ProductController";
-import { ScrapeProducts } from "../application/use-cases/products/ScrapeProducts";
-import { ProductScrapper } from "../infrastructure/scrappers/ProductScrapper";
-import { CreateProduct } from "../application/use-cases/products/CreateProduct";
-import { ProductRepository } from "../infrastructure/database/repositories/ProductRepository";
-import { FindProductByFilter } from "../application/use-cases/products/FindProductByFilter";
+import { ProductController } from "../controllers/ProductController.js";
+import { ScrapeProducts } from "../application/use-cases/products/ScrapeProducts.js";
+import { ProductScrapper } from "../infrastructure/scrappers/ProductScrapper.js";
+import { CreateProduct } from "../application/use-cases/products/CreateProduct.js";
+import { ProductRepository } from "../infrastructure/database/repositories/ProductRepository.js";
+import { FindProductByFilter } from "../application/use-cases/products/FindProductByFilter.js";
 
 const router = Router();
 const scraper = new ProductScrapper();

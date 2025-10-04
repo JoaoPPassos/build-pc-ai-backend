@@ -1,6 +1,6 @@
-import { kabumCategories } from "../../../utils/mapProductCategories";
-import { Product } from "../../../domain/entities/Product";
-import { IProductScrapperRepository } from "../../../domain/repositories/IProductScrapperRepository";
+import { kabumCategories } from "../../../utils/mapProductCategories.js";
+import { Product } from "../../../domain/entities/Product.js";
+import { IProductScrapperRepository } from "../../../domain/repositories/IProductScrapperRepository.js";
 
 export class ScrapeProducts {
   constructor(private scrapper: IProductScrapperRepository) {}

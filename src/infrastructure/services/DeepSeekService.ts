@@ -1,5 +1,5 @@
 import OpenAi from "openai"
-import { IDeepSeek } from "../../interfaces/IDeepSeek";
+import { IDeepSeek } from "../../interfaces/IDeepSeek.js";
 import "dotenv/config";
 
 const PREMISSA = `

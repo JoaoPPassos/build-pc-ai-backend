@@ -1,5 +1,5 @@
-import { Product } from "../../../domain/entities/Product";
-import { IProductRepository } from "../../../domain/repositories/IProductRepository";
+import { Product } from "../../../domain/entities/Product.js";
+import { IProductRepository } from "../../../domain/repositories/IProductRepository.js";
 
 export class FindProductByFilter {
   constructor(private productRepository: IProductRepository) {}

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { DeepSeekService } from "../infrastructure/services/DeepSeekService";
-import { GenerateWithDeepSeek } from "../application/use-cases/deepseek/GenerateWithDeepSeek";
+import { DeepSeekService } from "../infrastructure/services/DeepSeekService.js";
+import { GenerateWithDeepSeek } from "../application/use-cases/deepseek/GenerateWithDeepSeek.js";
 
 const router = Router();
 const deepSeekService = new DeepSeekService();
