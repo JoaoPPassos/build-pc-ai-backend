@@ -1,5 +1,5 @@
 import { Page } from "puppeteer-core";
-import { Product } from "../entities/Product.js";
+import { Product } from "../entities/Product";
 
 export interface IProductScrapperRepository {
   scrapeKabum(url: string): Promise<Product[]>;

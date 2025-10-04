@@ -1,6 +1,6 @@
-import { Product } from "../../../domain/entities/Product.js";
-import { IProductRepository } from "../../../domain/repositories/IProductRepository.js";
-import { MongoHelper } from "../mongodb/MongoHelper.js";
+import { Product } from "../../../domain/entities/Product";
+import { IProductRepository } from "../../../domain/repositories/IProductRepository";
+import { MongoHelper } from "../mongodb/MongoHelper";
 import { Filter, Document } from "mongodb";
 
 export class ProductRepository implements IProductRepository {
@@ -61,7 +61,7 @@ export class ProductRepository implements IProductRepository {
     }));
   }
 
-  async findByProduct(items: string[]): Promise<{[x:string]:Product[]}> {
+  async findByProduct(items: string[]): Promise<{ [x: string]: Product[] }> {
     const filters = this.constructFilters(items, 5); // as unknown as Filter<Document>;
     const collection = MongoHelper.getCollection("products");
 
@@ -69,7 +69,7 @@ export class ProductRepository implements IProductRepository {
     const mapped = Object.fromEntries(
       Object.entries(results[0]).map(([key, products]) => [
         key,
-        (products as any[]).map(p => ({
+        (products as any[]).map((p) => ({
           title: p.title,
           price: p.price,
           imageUrl: p.imageUrl,
@@ -80,11 +80,11 @@ export class ProductRepository implements IProductRepository {
           id: p._id?.toHexString?.(),
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
-        }))
+        })),
       ])
-);
+    );
 
-return mapped;
+    return mapped;
   }
 
   async findByCode(code: string): Promise<Product | null> {
@@ -148,30 +148,30 @@ return mapped;
     await collection.deleteOne({ code });
   }
 
-  private constructFilters(items: string[],limit: number) {
+  private constructFilters(items: string[], limit: number) {
     const facet: Record<string, any[]> = {};
 
     for (const item of items) {
       const key = item.replace(/[.\s]/g, "_"); // substitui espaços e pontos
       const titleArray = item
         .split(/\s|-/)
-        .map(word => word.trim())
+        .map((word) => word.trim())
         .filter(Boolean);
 
       facet[key] = [
         {
           $match: {
             price: { $ne: null },
-            $and: titleArray.map(word => ({
-              title: { $regex: word, $options: "i" }
-            }))
-          }
+            $and: titleArray.map((word) => ({
+              title: { $regex: word, $options: "i" },
+            })),
+          },
         },
         { $sort: { price: 1 } },
-        { $limit: limit }
+        { $limit: limit },
       ];
     }
 
-  return [{ $facet: facet }];
+    return [{ $facet: facet }];
   }
 }

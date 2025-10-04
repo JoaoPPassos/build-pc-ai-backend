@@ -1,12 +1,12 @@
 import cron from "node-cron";
-import { ScrapeProducts } from "../../application/use-cases/products/ScrapeProducts.js";
-import { ProductScrapper } from "../scrappers/ProductScrapper.js";
+import { ScrapeProducts } from "../../application/use-cases/products/ScrapeProducts";
+import { ProductScrapper } from "../scrappers/ProductScrapper";
 import {
   kabumCategories,
   pichauCategories,
-} from "../../utils/mapProductCategories.js";
-import { ProductRepository } from "../database/repositories/ProductRepository.js";
-import { Product } from "../../domain/entities/Product.js";
+} from "../../utils/mapProductCategories";
+import { ProductRepository } from "../database/repositories/ProductRepository";
+import { Product } from "../../domain/entities/Product";
 
 export class ScrapperScheduler {
   static start() {
