@@ -1,14 +1,10 @@
 // scrapers/ProductScraper.ts
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
-import { IProductScrapperRepository } from "../../domain/repositories/IProductScrapperRepository";
-import { Product } from "../../domain/entities/Product";
-import {
-  stringToCurrencyNumber,
-  stringToCurrencyString,
-} from "../../utils/formatString";
-import { get } from "http";
 import { Page } from "puppeteer-core";
+import { IProductScrapperRepository } from "../../domain/repositories/IProductScrapperRepository.js";
+import { Product } from "../../domain/entities/Product.js";
+import { stringToCurrencyNumber } from "../../utils/formatString.js";
 
 puppeteer.use(StealthPlugin());
 
