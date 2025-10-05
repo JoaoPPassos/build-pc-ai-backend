@@ -3,9 +3,6 @@ import swaggerUi from "swagger-ui-express";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -15,7 +12,8 @@ const options = {
     },
   },
   apis: [
-    path.join(__dirname, "../routes/*.ts"),        // Scan route files for JSDoc
+    path.resolve(process.cwd(), "src/routes/*.ts"), // desenvolvimento
+    path.resolve(process.cwd(), "dist/routes/*.js"), // produção
   ],
 };
 
