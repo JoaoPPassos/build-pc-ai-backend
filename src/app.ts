@@ -20,39 +20,25 @@ const limiter = rateLimit({
   standardHeaders: "draft-8",
   legacyHeaders: false,
 });
+const swaggerUiOptions = {
+  explorer: true,
+  customCss:
+    ".swagger-ui .opblock .opblock-summary-path-description-wrapper { align-items: center; display: flex; flex-wrap: wrap; gap: 0 10px; padding: 0 10px; width: 100%; }",
+  customCssUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui.min.css",
+};
+
 connectDatabase();
 
 app.use(limiter);
 app.use(express.json());
 app.use("/api", productRoutes);
 app.use("/api", deepseekRoutes);
-app.get("/api/docs", (req, res) => {
-  res.setHeader("Content-Type", "text/html");
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>API Docs</title>
-        <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
-      </head>
-      <body>
-        <div id="swagger-ui"></div>
-        <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
-        <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js"></script>
-        <script>
-          window.onload = () => {
-            SwaggerUIBundle({
-              spec: ${JSON.stringify(swaggerSpec)},
-              dom_id: '#swagger-ui',
-              deepLinking: true,
-              presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
-            });
-          };
-        </script>
-      </body>
-    </html>
-  `);
-});
+app.use(
+  "/api/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, swaggerUiOptions)
+);
 
 server.listen(3000, () => console.log("🚀 Server running on port 3000"));
 server.setTimeout(600000);
