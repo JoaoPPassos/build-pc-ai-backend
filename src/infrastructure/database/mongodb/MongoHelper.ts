@@ -5,7 +5,11 @@ export class MongoHelper {
   private static db: Db;
 
   static async connect(uri: string, dbName: string) {
-    this.client = await MongoClient.connect(uri);
+    this.client = await MongoClient.connect(uri, {
+      tls: true,
+      tlsAllowInvalidCertificates: true, // teste
+      serverSelectionTimeoutMS: 5000,
+    });
     this.db = this.client.db(dbName);
     console.log("Connected to MongoDB");
   }

@@ -4,6 +4,7 @@ npm-debug.log*
 
 # Environment files
 .env
+ecosystem.config.js
 
 # OS generated files
 .DS_Store
@@ -24,3 +25,4 @@ out/
 *.swp
 *.sublime-workspace
 *.sublime-project
+

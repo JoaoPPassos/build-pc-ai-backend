@@ -11,7 +11,8 @@
     "test:watch": "jest --watch",
     "test:unit": "jest --passWithNoTests --verbose --silent=false --testPathPatterns=tests/unit --detectOpenHandles ",
     "test:integration": "jest --passWithNoTests --testPathPatterns=tests/integration",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "pm2": "pm2 start ecosystem.config.js"
   },
   "dependencies": {
     "@types/swagger-jsdoc": "^6.0.4",
