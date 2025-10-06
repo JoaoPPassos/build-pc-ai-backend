@@ -1,18 +1,19 @@
 {
-  "name": "my-clean-api",
+  "name": "build-pc-api",
   "version": "1.0.0",
-  "main": "dist/server.js",
+  "main": "dist/app.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
+    "build:full": "yarn && yarn build && pm2 restart build-pc-api",
     "start": "node dist/app.js",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:unit": "jest --passWithNoTests --verbose --silent=false --testPathPatterns=tests/unit --detectOpenHandles ",
     "test:integration": "jest --passWithNoTests --testPathPatterns=tests/integration",
     "test:coverage": "jest --coverage",
-    "pm2": "pm2 start ecosystem.config.js"
+    "pm2": "pm2 start ecosystem.config.cjs"
   },
   "dependencies": {
     "@types/swagger-jsdoc": "^6.0.4",
