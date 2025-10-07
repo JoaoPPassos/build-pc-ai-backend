@@ -11,12 +11,14 @@ puppeteer.use(StealthPlugin());
 export class ProductScrapper implements IProductScrapperRepository {
   async scrapeKabum(url: string): Promise<Product[]> {
     let products: Product[] = [];
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/chromium-browser',
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     const page = await browser.newPage();
     await page.goto(url, { timeout: 0 });
     products = await this.parsePageKabum(page);
-
-    console.log("chegou", products);
 
     await browser.close();
     return products;
@@ -24,7 +26,11 @@ export class ProductScrapper implements IProductScrapperRepository {
 
   async scrapePichau(url: string): Promise<Product[]> {
     puppeteer.use(StealthPlugin());
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/chromium-browser',
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     const page = await browser.newPage();
     await page.goto(url, { timeout: 0 });
     const content = await page.content();
