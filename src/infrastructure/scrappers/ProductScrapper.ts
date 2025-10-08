@@ -101,7 +101,6 @@ export class ProductScrapper implements IProductScrapperRepository {
 
         await page.goto(finalUrl, {
           waitUntil: "networkidle0",
-          timeout: 60000,
         });
       }
     }
