@@ -12,9 +12,9 @@ export class ProductScrapper implements IProductScrapperRepository {
   async scrapeKabum(url: string): Promise<Product[]> {
     let products: Product[] = [];
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium-browser',
+      executablePath: "/usr/bin/chromium-browser",
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
     await page.goto(url, { timeout: 0 });
@@ -25,11 +25,10 @@ export class ProductScrapper implements IProductScrapperRepository {
   }
 
   async scrapePichau(url: string): Promise<Product[]> {
-    puppeteer.use(StealthPlugin());
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium-browser',
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: "/usr/bin/chromium-browser",
+      headless: false,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
     await page.goto(url, { timeout: 0 });
@@ -114,43 +113,48 @@ export class ProductScrapper implements IProductScrapperRepository {
   async parsePagePichau(page: Page): Promise<Product[]> {
     const products: any[] = [];
 
-    const getPages = await page.$$eval(
-      'nav[aria-label="pagination navigation"]',
-      (uls: any) => {
-        if (!uls.length) return null;
+    const getPages =
+      (await page.$$eval(
+        'nav[aria-label="pagination navigation"]',
+        (uls: any) => {
+          if (!uls.length) return null;
 
-        const ul = uls[0]; // pega o primeiro UL encontrado
-        const items = ul.querySelectorAll("li");
+          const ul = uls[0]; // pega o primeiro UL encontrado
+          const items = ul.querySelectorAll("li");
 
-        if (items.length < 2) return null;
+          if (items.length < 2) return null;
 
-        const penultimo = items[items.length - 2]; // penúltimo LI
-        return penultimo.textContent?.trim() || null;
-      }
-    ) || 1;
+          const penultimo = items[items.length - 2]; // penúltimo LI
+          return penultimo.textContent?.trim() || null;
+        }
+      )) || 1;
 
     for (let i = 1; i <= (getPages ? parseInt(getPages) : 0); i++) {
       const list = await page.$$eval(
         'a[data-cy="list-product"]',
         (elements: any) =>
-          Array.from(elements).map((el: any) => {
-            const title = el.querySelector("h2")?.textContent?.trim() || "";
-            const code = title.split(",").at(-1).trim();
-            const price =
-              el.querySelector('[class*="price_vista"]')?.textContent?.trim() ||
-              "";
-            const imageSrc = el.querySelector("img")?.getAttribute("src") || "";
-            const href = el.href || "";
-            return {
-              title,
-              price,
-              imageUrl: imageSrc,
-              code,
-              productUrl: href,
-              source: "pichau",
-              historyPrice: [],
-            };
-          }).filter(e => e.title && e.code)
+          Array.from(elements)
+            .map((el: any) => {
+              const title = el.querySelector("h2")?.textContent?.trim() || "";
+              const code = title.split(",").at(-1).trim();
+              const price =
+                el
+                  .querySelector('[class*="price_vista"]')
+                  ?.textContent?.trim() || "";
+              const imageSrc =
+                el.querySelector("img")?.getAttribute("src") || "";
+              const href = el.href || "";
+              return {
+                title,
+                price,
+                imageUrl: imageSrc,
+                code,
+                productUrl: href,
+                source: "pichau",
+                historyPrice: [],
+              };
+            })
+            .filter((e) => e.title && e.code)
       );
       products.push(...list);
       const currentUrl = page.url();
