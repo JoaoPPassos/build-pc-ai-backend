@@ -25,12 +25,19 @@ export class ProductScrapper implements IProductScrapperRepository {
   }
 
   async scrapePichau(url: string): Promise<Product[]> {
+    const proxyUser = "brd-customer-hl_de13e1ad-zone-build_pc_ai_proxy";
+    const proxyPass = "hw9j5sqwbv0g"; // substitua pelo token da Bright Data
+
     const browser = await puppeteer.launch({
       executablePath: "/usr/bin/chromium-browser",
       headless: false,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: ["--no-sandbox", "--disable-setuid-sandbox","--proxy-server=brd.superproxy.io:33335",],
     });
     const page = await browser.newPage();
+    await page.authenticate({
+      username: proxyUser,
+      password: proxyPass,
+    });
     await page.goto(url, { timeout: 0 });
     const content = await page.content();
 
