@@ -10,7 +10,7 @@ import { Product } from "../../domain/entities/Product.js";
 
 export class ScrapperScheduler {
   static start() {
-    const EXPRESSION = "50 * * * *";
+    const EXPRESSION = "0 19 * * *";
 
     cron.schedule(EXPRESSION, async () => {
       console.log("Cronjob iniciado: scraping de produtos KABUM");
@@ -39,7 +39,6 @@ export class ScrapperScheduler {
     });
 
     cron.schedule(EXPRESSION, async () => {
-      console.log("Cronjob iniciado: scraping de produtos PICHAU");
       const scraper = new ProductScrapper();
       const useCase = new ScrapeProducts(scraper);
       const productRepo = new ProductRepository();
